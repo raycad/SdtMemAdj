@@ -1,5 +1,6 @@
 package com.seedotech.sdtmemadj;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,34 +12,45 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private Context mContext;
-    private EditText mEdtMemInfo;
+    private TextView mTvMemInfo;
+    private TextView mTvMemHeap;
+    private EditText mEdtMemAdj;
+
     public native int nativeInitMemAdj();
+
     public native int nativeDeInitMemAdj();
+
     public native int nativeIncreaseMem(int mbSize);
+
     public native int nativeDecreaseMem(int mbSize);
 
     protected void initUI() {
-        mEdtMemInfo = (EditText)findViewById(R.id.edt_mem_info);
-        Button btn = (Button)findViewById(R.id.btn_mem_info);
+        mTvMemInfo = (TextView) findViewById(R.id.tv_mem_info);
+        mTvMemHeap = (TextView) findViewById(R.id.tv_mem_heap);
+        mEdtMemAdj = (EditText) findViewById(R.id.edt_mem_adj);
+        mEdtMemAdj.setText("50");
+        Button btn = (Button) findViewById(R.id.btn_refresh_mem_info);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                refreshMemInfo();
             }
         });
 
-        btn = (Button)findViewById(R.id.btn_increase_mem);
+        btn = (Button) findViewById(R.id.btn_increase_mem);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    int size = nativeIncreaseMem(20);
-                    mEdtMemInfo.setText(String.format("%d", size));
+                    int size = nativeIncreaseMem(Integer.parseInt(mEdtMemAdj.getText().toString()));
+                    mTvMemHeap.setText(String.format("Current MEM heap: %d (MB)", size));
+                    refreshMemInfo();
                 } catch (Exception e) {
                     Toast.makeText(mContext, e.toString(),
                             Toast.LENGTH_LONG).show();
@@ -46,15 +58,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn = (Button)findViewById(R.id.btn_decrease_mem);
+        btn = (Button) findViewById(R.id.btn_decrease_mem);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int size = nativeDecreaseMem(20);
-                mEdtMemInfo.setText(String.format("%d", size));
+                try {
+                    int size = nativeDecreaseMem(Integer.parseInt(mEdtMemAdj.getText().toString()));
+                    if (size < 0)
+                        size = 0;
+                    mTvMemHeap.setText(String.format("Current MEM heap: %d (MB)", size));
+                    refreshMemInfo();
+                } catch (Exception e) {
+                    Toast.makeText(mContext, e.toString(),
+                            Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
+
+    protected void refreshMemInfo() {
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(mi);
+        long availableMegs = mi.availMem / 1048576;
+        long totalMegs = mi.totalMem / 1048576;
+        mTvMemInfo.setText(String.format("Memory Information: \nTotal MEM: %d (MB)\nAvailable MEM: %d (MB)",
+                totalMegs, availableMegs));
+    }
+
     protected void init() {
         mContext = this;
         try {
@@ -65,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
         initUI();
+        refreshMemInfo();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

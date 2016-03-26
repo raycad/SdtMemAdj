@@ -22,12 +22,7 @@
             android:id="@+id/tv_mem_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/mem_info"/>
-
-        <EditText
-            android:id="@+id/edt_mem_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:text="@string/mem_info" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,11 +30,32 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btn_mem_info"
+                android:id="@+id/btn_refresh_mem_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MEM info" />
+                android:layout_marginTop="5dp"
+                android:text="Refresh Mem Info" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="5dp"
+            android:text="Enter MEM size to adjust (MB):" />
+
+        <EditText
+            android:id="@+id/edt_mem_adj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/tv_mem_heap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Current MEM heap: " />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -65,6 +81,4 @@
                 android:text="Decrease MEM" />
         </LinearLayout>
     </LinearLayout>
-
-
 </RelativeLayout>
