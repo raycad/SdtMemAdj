@@ -17,6 +17,8 @@ jint Java_com_seedotech_sdtmemadj_MainActivity_nativeIncreaseMem(JNIEnv* env, jo
     int size, i;
     for (i = 0 ; i < mb_size; ++i) {
         struct OneMB *oneMB = (struct OneMB *)malloc(sizeof(struct OneMB));
+        if (!oneMB)
+            return -1;
         size = sdt_list_add(mem_list, oneMB);
         if (size < 1)
             break;
@@ -33,6 +35,11 @@ jint Java_com_seedotech_sdtmemadj_MainActivity_nativeDecreaseMem(JNIEnv* env, jo
             break;
     }
     return size;
+}
+
+jint Java_com_seedotech_sdtmemadj_MainActivity_nativeGetHeapSize(JNIEnv* env, jobject thiz)
+{
+    return mem_list->size;
 }
 
 jint Java_com_seedotech_sdtmemadj_MainActivity_nativeDeInitMemAdj(JNIEnv* env, jobject thiz)

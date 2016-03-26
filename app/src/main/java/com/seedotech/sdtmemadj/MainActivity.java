@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     public native int nativeDecreaseMem(int mbSize);
 
+    public native int nativeGetHeapSize();
+
     protected void initUI() {
         mTvMemInfo = (TextView) findViewById(R.id.tv_mem_info);
         mTvMemHeap = (TextView) findViewById(R.id.tv_mem_heap);
@@ -49,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     int size = nativeIncreaseMem(Integer.parseInt(mEdtMemAdj.getText().toString()));
+                    if (size < 0) {
+                        Toast.makeText(mContext, "Can not allocate more memory",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    size = nativeGetHeapSize();
                     mTvMemHeap.setText(String.format("Current MEM heap: %d (MB)", size));
                     refreshMemInfo();
                 } catch (Exception e) {
@@ -66,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                     int size = nativeDecreaseMem(Integer.parseInt(mEdtMemAdj.getText().toString()));
                     if (size < 0)
                         size = 0;
-                    mTvMemHeap.setText(String.format("Current MEM heap: %d (MB)", size));
                     refreshMemInfo();
                 } catch (Exception e) {
                     Toast.makeText(mContext, e.toString(),
@@ -77,13 +83,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void refreshMemInfo() {
+        int converter = 1048576;
         ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
-        long availableMegs = mi.availMem / 1048576;
-        long totalMegs = mi.totalMem / 1048576;
-        mTvMemInfo.setText(String.format("Memory Information: \nTotal MEM: %d (MB)\nAvailable MEM: %d (MB)",
-                totalMegs, availableMegs));
+        Runtime rt = Runtime.getRuntime();
+        long totalMegs = mi.totalMem / converter;
+        long availableMegs = mi.availMem / converter;
+        long vmHeapSize = rt.totalMemory() / converter;
+        long allocVMMem = (rt.totalMemory() - rt.freeMemory()) / converter;
+        long maxMem = rt.maxMemory() / converter;
+        long nativeHeap = android.os.Debug.getNativeHeapAllocatedSize() / converter;
+        mTvMemInfo.setText(String.format("Total MEM: %d (MB)\nAvailable MEM: %d (MB)\n" +
+                        "Max MEM For App: %d (MB)\n" +
+                        "VM Heap Size: %d (MB)\nAllocated VM MEM: %d (MB)\n" +
+                        "Native Heap: %d (MB)",
+                totalMegs, availableMegs, maxMem, vmHeapSize, allocVMMem, nativeHeap));
+        mTvMemHeap.setText(String.format("Current MEM Heap Size: %d (MB)", nativeGetHeapSize()));
     }
 
     protected void init() {

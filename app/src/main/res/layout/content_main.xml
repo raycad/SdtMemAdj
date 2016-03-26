@@ -17,12 +17,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="@string/mem_info" />
 
         <TextView
             android:id="@+id/tv_mem_info"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/mem_info" />
+            android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,9 +44,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:textStyle="bold"
             android:layout_marginTop="5dp"
-            android:text="Enter MEM size to adjust (MB):" />
+            android:text="Enter MEM Size To Adjust (MB):" />
 
         <EditText
             android:id="@+id/edt_mem_adj"

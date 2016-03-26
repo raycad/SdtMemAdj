@@ -23,6 +23,9 @@ int sdt_list_add(struct sdt_list *list, void *data)
         return -1; // Failed to add a new node
 
     sdt_node *new_node = (sdt_node *)malloc(sizeof(sdt_node));
+    if (!new_node)
+        return -1;
+
     new_node->data = data;
     new_node->next_node = NULL;
 
@@ -64,28 +67,26 @@ void *sdt_list_get_data_at(struct sdt_list *list, int index)
 int sdt_list_remove_first_node(struct sdt_list *list)
 {
     sdt_node *node = list->first_node;
-    if (node) {
-        list->first_node = node->next_node;
-        free(node);
-        node = NULL;
-        --list->size;
-        return list->size;
-    }
+    if (!node)
+        return -1;
 
-    return -1;
+    list->first_node = node->next_node;
+    free(node);
+    node = NULL;
+    --list->size;
+    return list->size;
 }
 
 int sdt_list_destroy_first_node(struct sdt_list *list)
 {
     sdt_node *node = list->first_node;
-    if (list->first_node) {
-        list->first_node = node->next_node;
-        sdt_list_destroy_node_data(node);
-        --list->size;
-        return list->size;
-    }
+    if (!node)
+        return -1;
 
-    return -1;
+    list->first_node = node->next_node;
+    sdt_list_destroy_node_data(node);
+    --list->size;
+    return list->size;
 }
 
 void sdt_list_destroy_node_data(struct sdt_node *node)
