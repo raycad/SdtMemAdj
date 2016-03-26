@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     protected void init() {
         mContext = this;
         try {
-            System.loadLibrary("smemadj");
+            System.loadLibrary("sdtmemadj");
             nativeInitMemAdj();
         } catch (Exception e) {
             Toast.makeText(mContext, e.toString(),
