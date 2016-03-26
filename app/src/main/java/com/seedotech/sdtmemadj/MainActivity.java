@@ -23,13 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText mEdtMemAdj;
 
     public native int nativeInitMemAdj();
-
     public native int nativeDeInitMemAdj();
-
     public native int nativeIncreaseMem(int mbSize);
-
     public native int nativeDecreaseMem(int mbSize);
-
     public native int nativeGetHeapSize();
 
     protected void initUI() {
@@ -105,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     protected void init() {
         mContext = this;
         try {
+            System.loadLibrary("gnustl_shared");
             System.loadLibrary("sdtmemadj");
             nativeInitMemAdj();
         } catch (Exception e) {

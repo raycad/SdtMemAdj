@@ -2,6 +2,9 @@
 #include <cstdlib>
 #include "sdt_list.h"
 
+#include <vector>
+using namespace std;
+
 #define MEM_BLOCK 1024
 struct OneMB {
     int bytes[256*1024]; // 4*256*1024 Bytes = 1MB
